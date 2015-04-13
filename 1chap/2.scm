@@ -237,12 +237,18 @@
 
 (define (timing func para)
   (define (timing-inner func start-time)
-    (func)
-    (display (- (runtime) start-time)))
-  (timing-inner func (runtime)))
+    (func para)
+    (newline)
+    (display (- (current-inexact-milliseconds) start-time)))
+  (timing-inner func (current-inexact-milliseconds)))
 
 
-(timing (small-divisor-rev 6))
+(define (quick-prime2? n)
+  (define (inner n count)
+    (cond
+      ((= count 0) #t)
+      ((fermat-test n) (inner n (- count 1)))
+      (else #f)))
+  (inner n n))
 
-
-
+(quick-prime2? 561)
