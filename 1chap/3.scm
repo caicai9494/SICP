@@ -241,3 +241,77 @@
 	       1.0))
 (sqrt3 9)
 
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+	       1.0))
+(cube-root 8)
+
+(define (deriv g)
+  (let ((dx 0.000000001))
+    (lambda (x) (/ (- (g (+ x dx)) (g x)) dx))))
+((deriv (lambda (x) (* x x x))) 5)
+
+
+(define (newton-transform g)
+  (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+(define (newton g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (fixed-point-transform g transform guess) 
+  (fixed-point (transform g) guess))
+
+(define (sqrt4 x)
+  (fixed-point-transform (lambda (y) (- (square y) x)) newton-transform 1.0))
+(sqrt4 9)
+
+;1.40
+(define (cubic a b c)
+  (lambda (x) (+ (expt x 3) (* a (square x)) (* b x) c)))
+(newton (cubic -5 5 -3) 1)
+
+;1.41 ??
+(define (double f)
+  (lambda (x) (f (f x))))
+((double (lambda (x) (+ 1 x))) 1)
+(((double (double double)) (lambda (x) (+ 1 x))) 5) 
+
+;1.42
+(define (inc x)
+  (+ 1 x))
+
+(define (compose f g)
+  (lambda (x) (f (g x))))
+((compose square inc) 6)
+
+;1.43
+(define (repeat f n)
+  (define (repeat-i i ret)
+    (if (> i n)
+      ret
+      (repeat-i (+ n 1) (compose f ret))))
+  (repeat-i 1 f))
+(define (repeat2 f n)
+  (if (= n 1)
+    f
+    (compose f (repeat2 f (- n 1)))))
+
+((repeat2 square 2) 5)
+
+;1.44
+(define (smooth f)
+  (let ((dx 0.0001))
+    (lambda (x) (/ (+ (f (+ x dx)) (f x) (f (- x dx))) 3))))
+(define (n-smooth f n)
+  (repeat (smooth f) n))
+((n-smooth sin 5) 2)
+
+;1.45
+(define (qua-root x)
+  (fixed-point-transform (lambda (y) (/ x (* y y y))) average-damp 1.0))
+(qua-root 16)
+    
+
+
+
+
+
