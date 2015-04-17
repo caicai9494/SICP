@@ -192,33 +192,45 @@
 
 ;1.37
 (define (cont-frac-iter n d k)
-  (define (inner n d k place)
+  (define (inner k place)
     (cond
-      ((= k 1) place)
-      (else (inner n d (- k 1) (/ (n k) (+ (d k) place))))))
-  (inner n d k 0.0))
+      ((= k 0) place)
+      (else (inner (- k 1) (/ (n k) (+ (d k) place))))))
+  (inner k 0.0))
 
 (cont-frac-iter 1.0 1.0 100)
 
+;1.38
 (define (cont-frac n d k)
-  (if (= k 0)
-    (/ (n k) (d k))
-    (/ (n k) (+ (d k) (cont-frac n d (- k 1))))))
+  (define (cont-frac-sub it)
+    (if (= it k)
+      (/ (n it) (d it))
+      (/ (n it) (+ (d it) (cont-frac-sub (+ it 1))))))
+  (cont-frac-sub 1))
 
 (cont-frac (lambda (x) 1.0) (lambda (x) 1.0) 100)
 
-(cont-frac (lambda (x) 1.0) 
+(define (e k)
+  (+ 2 (cont-frac-iter (lambda (x) 1.0) 
 	   (lambda (x) 
-	     (if (= (remainder (+ 1 x) 3) 0) 
-	       x
-	       1.0)) 100)
+	     (let ((r (remainder x 3))
+		    (f (floor (/ x 3))))
+	       (if (= r 2) 
+	         (* 2 (+ f 1))
+		 1.0)))
+	   k)))
+(e 5)
 
 ;1.39
 (define (tan-cf x k)
-  (- (cont-frac (lambda (k) (- (expt x k)))
-	     (lambda (x) (- (* 2.0 k) 1.0))
-	     k)))
-(tan-cf 180 100)
+  (cont-frac
+       (lambda (i) 
+	  (if (= i 1)
+	    x
+	    (- (square x))))
+       (lambda (i) (- (* 2 i) 1))
+	     k))
+(tan-cf (/ 3.14 4) 10)
 
 (define (average-damp f)
   (lambda (x) (average x (f x))))
