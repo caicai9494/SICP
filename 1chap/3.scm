@@ -299,19 +299,16 @@
 
 ;1.44
 (define (smooth f)
-  (let ((dx 0.0001))
+  (let ((dx 0.00001))
     (lambda (x) (/ (+ (f (+ x dx)) (f x) (f (- x dx))) 3))))
 (define (n-smooth f n)
   (repeat (smooth f) n))
-((n-smooth sin 5) 2)
+
+((n-smooth square 5) 2)
+(square 2)
 
 ;1.45
 (define (qua-root x)
-  (fixed-point-transform (lambda (y) (/ x (* y y y))) average-damp 1.0))
-(qua-root 16)
+  (fixed-point-transform (lambda (y) (/ x (* y y y))) (n-smooth average-damp 3) 1.0))
+(qua-root 10)
     
-
-
-
-
-
