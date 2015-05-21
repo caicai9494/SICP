@@ -196,3 +196,94 @@
 (print-interval itv3)
 (center itv3)
 (ratio itv3)
+
+(define nil ())
+(cons 1 (cons 2 (cons 3 (cons 4 nil))))
+(define one-through-four (list 1 2 3 4))
+(define odds (list 1 3 5 7))
+one-through-four
+
+(define (list-ref2 l n)
+  (if (= n 0)
+    (car l)
+    (list-ref2 (cdr l) (- n 1))))
+(define (length2 l)
+  (if (not (null? l))
+    (+ 1 (length2 (cdr l)))
+    0))
+(define (append2 lhs rhs)
+  (if (null? rhs)
+   lhs
+    (append2 (cons lhs (car rhs)) (cdr rhs))))
+
+(define (append3 lhs rhs)
+  (if (null? lhs)
+    rhs
+    (cons (car lhs) (append3 (cdr lhs) rhs))))
+
+
+(list-ref2 one-through-four 2)
+(length one-through-four)
+(length2 one-through-four)
+(append one-through-four odds)
+(append2 one-through-four odds)
+(append3 one-through-four odds)
+
+;2.17
+(define (last-pair l)
+  (if (null? (cdr l))
+    (car l)
+    (last-pair (cdr l))))
+(last-pair one-through-four)
+
+(append (cdr one-through-four) (car one-through-four))
+
+;2.18
+(define (reverse2 l)
+  (if (null? (cdr l))
+    l
+    (append2 (reverse2 (cdr l))
+	     (list (car l)))))
+
+
+(reverse2 one-through-four)
+
+(+ one-through-four)
+  
+(list nil 3)
+
+;2.19
+(define us-coin (list 50 25 10 5 1))
+(define us-coin2 (list 1 5 10 25 50))
+(define uk-coin (list 100 50 20 10 5 2 1 .5))
+
+(define (cc amount coin-values)
+
+  (define no-more? null?)
+
+  (define (first-domination coin-values) 
+    (car coin-values))
+	   
+  (define (except-first-domination coin-values) 
+    (cdr coin-values))
+
+  (cond ((= amount 0) 1)
+	((or (< amount 0) (no-more? coin-values)) 0)
+	(else 
+	  (+ (cc amount (except-first-domination coin-values))
+	     (cc (- amount (first-domination coin-values)) coin-values)))))
+
+(cc 100 us-coin)
+
+;2.20
+(define (same-parity . z)
+  (define (same-parity-sub source dist count)
+    (if (null? source) 
+      dist
+      (if (even? count) 
+	(same-parity-sub (cdr source) (cons (car source) dist) (+ 1 count))
+	(same-parity-sub (cdr source) dist (+ 1 count)))))
+  (same-parity-sub z nil 0))
+
+(same-parity 1 2 3 4 5)
+
